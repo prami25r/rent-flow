@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: rentfollow-postgres
+    environment:
+      POSTGRES_USER: rentfollow
+      POSTGRES_PASSWORD: rentfollow
+      POSTGRES_DB: rentfollow
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  redis:
+    image: redis:7-alpine
+    container_name: rentfollow-redis
+    ports:
+      - "6379:6379"
+  api:
+    build: .
+    container_name: rentfollow-api
+    depends_on:
+      - db
+      - redis
+    environment:
+      DATABASE_URL: postgresql://rentfollow:rentfollow@db:5432/rentfollow?schema=public
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: changemechangemechangeme
+      PORT: 3000
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+volumes:
+  pgdata:
+

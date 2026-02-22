@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PaymentStatus {
+  PENDING
+  PARTIAL
+  PAID
+  FAILED
+}
+
+enum FeeType {
+  FLAT
+  PERCENTAGE
+}
+
+enum RiskLevel {
+  SAFE
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Landlord {
+  id            String               @id @default(cuid())
+  email         String               @unique
+  passwordHash  String
+  name          String
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  tenants       Tenant[]
+  payments      Payment[]
+  workflows     EscalationWorkflow[]
+  lateFeeConfig LateFeeConfig?
+}
+
+model Tenant {
+  id           String     @id @default(cuid())
+  landlordId   String
+  landlord     Landlord   @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+  firstName    String
+  lastName     String
+  email        String?
+  phone        String?
+  unit         String
+  monthlyRent  Decimal     @db.Decimal(12,2)
+  riskLevel    RiskLevel   @default(SAFE)
+  lateCount    Int         @default(0)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  payments     Payment[]
+
+  @@index([landlordId])
+  @@index([riskLevel])
+}
+
+model Payment {
+  id             String        @id @default(cuid())
+  landlordId     String
+  tenantId       String
+  landlord       Landlord      @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+  tenant         Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  dueDate        DateTime
+  paidDate       DateTime?
+  amountDue      Decimal       @db.Decimal(12,2)
+  amountPaid     Decimal       @default(0) @db.Decimal(12,2)
+  status         PaymentStatus @default(PENDING)
+  lateFeesTotal  Decimal       @default(0) @db.Decimal(12,2)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([landlordId])
+  @@index([tenantId])
+  @@index([status, dueDate])
+}
+
+model EscalationWorkflow {
+  id          String            @id @default(cuid())
+  landlordId  String
+  landlord    Landlord          @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+  name        String
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  steps       EscalationStep[]
+}
+
+model EscalationStep {
+  id          String               @id @default(cuid())
+  workflowId  String
+  workflow    EscalationWorkflow   @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  dayOffset   Int
+  action      String
+  applyFee    Boolean              @default(false)
+  feeAmount   Decimal?             @db.Decimal(12,2)
+  feePercent  Decimal?             @db.Decimal(5,2)
+  createdAt   DateTime             @default(now())
+
+  @@index([workflowId, dayOffset])
+}
+
+model LateFeeConfig {
+  id              String   @id @default(cuid())
+  landlordId      String   @unique
+  landlord        Landlord @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+  type            FeeType
+  amount          Decimal  @db.Decimal(12,2)
+  gracePeriodDays Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
