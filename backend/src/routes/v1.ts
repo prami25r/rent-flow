@@ -16,6 +16,7 @@ router.get('/analytics/summary', authRequired, analytics.getSummary);
 
 router.post('/tenants', authRequired, tenants.createTenant);
 router.get('/tenants', authRequired, tenants.listTenants);
+router.get('/tenants/:id/payments', authRequired, tenants.listTenantPayments);
 
 router.post('/recovery/run-daily', authRequired, recovery.runDailyRecovery);
 
