@@ -26,5 +26,7 @@ export const workflowService = {
   },
   getActive: (landlordId: string) =>
     prisma.escalationWorkflow.findFirst({ where: { landlordId, isActive: true }, include: { steps: { orderBy: { dayOffset: 'asc' } } } }),
+  getById: (landlordId: string, id: string) =>
+    prisma.escalationWorkflow.findFirst({ where: { landlordId, id }, include: { steps: { orderBy: { dayOffset: 'asc' } } } }),
 };
 

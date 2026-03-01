@@ -10,11 +10,11 @@ import { RoleGuard } from '@/features/auth/role-guard';
 
 export default function LateFeeConfigPage() {
   const qc = useQueryClient();
-  const { data } = useQuery({
+  const { data } = useQuery<LateFeeConfig>({
     queryKey: ['config', 'late-fee'],
     queryFn: async () => {
       const res = await api.get<LateFeeConfig | null>('/config/late-fee');
-      return res.data ?? { type: 'FLAT', amount: 0, gracePeriodDays: 0 };
+      return (res.data ?? { type: 'FLAT', amount: 0, gracePeriodDays: 0 } as LateFeeConfig);
     },
   });
   const mutation = useMutation({
@@ -38,7 +38,8 @@ export default function LateFeeConfigPage() {
   });
 
   function update<K extends keyof LateFeeConfig>(key: K, value: LateFeeConfig[K]) {
-    const next = { ...(data ?? { type: 'FLAT', amount: 0, gracePeriodDays: 0 }), [key]: value };
+    const base: LateFeeConfig = { type: 'FLAT', amount: 0, gracePeriodDays: 0 };
+    const next: LateFeeConfig = { ...(data ?? base), [key]: value } as LateFeeConfig;
     mutation.mutate(next);
   }
 

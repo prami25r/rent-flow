@@ -4,6 +4,9 @@ export const landlordRepo = {
   findByEmail: (email: string) => prisma.landlord.findUnique({ where: { email } }),
   create: (data: { email: string; name: string; passwordHash: string }) =>
     prisma.landlord.create({ data }),
+  getById: (id: string) => prisma.landlord.findUnique({ where: { id } }),
+  updateName: (id: string, name: string) =>
+    prisma.landlord.update({ where: { id }, data: { name } }),
   getLateFeeConfig: (landlordId: string) =>
     prisma.lateFeeConfig.findUnique({ where: { landlordId } }),
   upsertLateFeeConfig: (landlordId: string, data: { type: 'FLAT' | 'PERCENTAGE'; amount: any; gracePeriodDays: number }) =>
@@ -13,4 +16,3 @@ export const landlordRepo = {
       create: { landlordId, ...data },
     }),
 };
-

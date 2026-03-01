@@ -14,17 +14,24 @@ export const DAILY_QUEUE = 'daily-overdue-scan';
 export const dailyQueue = new Queue<{ landlordId: string }, any, string>(DAILY_QUEUE, { connection });
 
 export function startDailyWorker() {
-  const worker = new Worker<{ landlordId: string }, any, string>(
-    DAILY_QUEUE,
-    async (job) => {
-      logger.info({ jobId: job.id, landlordId: job.data.landlordId }, 'Running daily overdue scan');
-      await escalationService.runDaily(job.data.landlordId, new Date());
-    },
-    { connection }
-  );
-  worker.on('failed', (job, err) => {
-    logger.error({ jobId: job?.id, err }, 'Daily overdue scan failed');
-  });
+  try {
+    const worker = new Worker<{ landlordId: string }, any, string>(
+      DAILY_QUEUE,
+      async (job) => {
+        logger.info({ jobId: job.id, landlordId: job.data.landlordId }, 'Running daily overdue scan');
+        await escalationService.runDaily(job.data.landlordId, new Date());
+      },
+      { connection }
+    );
+    worker.on('failed', (job, err) => {
+      logger.error({ jobId: job?.id, err }, 'Daily overdue scan failed');
+    });
+    worker.on('error', (err) => {
+      logger.error({ err }, 'Daily worker error');
+    });
+  } catch (err) {
+    logger.warn({ err }, 'Redis not available, skipping daily worker');
+  }
 }
 
 export async function scheduleDailyJob(landlordId: string) {

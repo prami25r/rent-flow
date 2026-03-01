@@ -14,10 +14,15 @@ function getToken() {
 api.interceptors.request.use((config) => {
   const token = getToken();
   if (token) {
-    config.headers.set('Authorization', `Bearer ${token}`);
-      ...config.headers,
-      Authorization: `Bearer ${token}`,
-    };
+    const hdrs = config.headers;
+    if (hdrs && typeof (hdrs as unknown as { set?: (k: string, v: string) => void }).set === 'function') {
+      (hdrs as unknown as { set: (k: string, v: string) => void }).set('Authorization', `Bearer ${token}`);
+    } else {
+      if (!config.headers) {
+        (config.headers as unknown) = {} as Record<string, string>;
+      }
+      (config.headers as unknown as Record<string, string>)['Authorization'] = `Bearer ${token}`;
+    }
   }
   return config;
 });

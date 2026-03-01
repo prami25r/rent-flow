@@ -2,7 +2,7 @@
   "name": "rentfollow",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
+  "type": "commonjs",
   "description": "RentFollow - Rent recovery automation engine for small landlords",
   "main": "dist/index.js",
   "scripts": {

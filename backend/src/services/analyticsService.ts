@@ -5,7 +5,7 @@ export const analyticsService = {
   summary: async (landlordId: string) => {
     const today = new Date();
 
-    const [latePayments, totalFees, riskDist, totalPayments, recoveredCount] =
+    const [latePayments, totalFees, riskDist, totalPayments, recoveredCount, totalTenants] =
       await Promise.all([
         prisma.payment.findMany({
           where: {
@@ -32,6 +32,7 @@ export const analyticsService = {
         prisma.payment.count({
           where: { landlordId, status: PaymentStatus.PAID },
         }),
+        prisma.tenant.count({ where: { landlordId } }),
       ]);
 
     const daysLateArr = latePayments.map(({ dueDate, paidDate }) => {
@@ -58,11 +59,28 @@ export const analyticsService = {
       {} as Record<string, number>
     );
 
+    const overdueCount = latePayments.length;
+    const overdueSamples = await prisma.payment.findMany({
+      where: {
+        landlordId,
+        status: { in: [PaymentStatus.PENDING, PaymentStatus.PARTIAL] },
+        dueDate: { lt: today },
+      },
+      orderBy: { dueDate: 'desc' },
+      take: 10,
+      include: {
+        tenant: { select: { id: true, firstName: true, lastName: true, unit: true } },
+      },
+    });
+
     return {
       avgDaysLate,
       recoveryRate,
       totalLateFees,
       risk,
+      totalTenants,
+      overdueCount,
+      overdueSamples,
     };
   },
 };

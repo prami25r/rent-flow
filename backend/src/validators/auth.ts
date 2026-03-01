@@ -11,3 +11,17 @@ export const LoginSchema = z.object({
   password: z.string().min(8),
 });
 
+export const VerifyEmailSchema = z.object({
+  email: z.string().email(),
+  token: z.string().min(16),
+});
+
+export const RequestPasswordResetSchema = z.object({
+  email: z.string().email(),
+});
+
+export const ResetPasswordSchema = z.object({
+  email: z.string().email(),
+  token: z.string().min(16),
+  newPassword: z.string().min(8),
+});

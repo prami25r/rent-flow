@@ -13,13 +13,13 @@ const RISK_ORDER: RiskLevel[] = ['SAFE', 'LOW', 'MEDIUM', 'HIGH'];
 export default function TenantsPage() {
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState<RiskLevel | 'ALL'>('ALL');
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<Paginated<Tenant>>({
     queryKey: ['tenants', page],
     queryFn: async () => {
       const res = await api.get<Paginated<Tenant>>('/tenants', { params: { page, pageSize: 20 } });
       return res.data;
     },
-    keepPreviousData: true,
+    placeholderData: (prev) => prev,
   });
 
   const items = useMemo(() => {
@@ -61,11 +61,7 @@ export default function TenantsPage() {
             {
               key: 'riskLevel',
               header: 'Risk',
-              render: (v) => (
-                <Badge variant="secondary" className={riskClass(v)}>
-                  {v as RiskLevel}
-                </Badge>
-              ),
+              render: (v) => <Badge className={riskClass(v as RiskLevel)}>{v as RiskLevel}</Badge>,
             },
             { key: 'lateCount', header: 'Late' },
             {

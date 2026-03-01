@@ -4,10 +4,11 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 const items = [
+  { href: '/dashboard', label: 'Overview' },
   { href: '/dashboard/tenants', label: 'Tenants' },
   { href: '/dashboard/analytics', label: 'Analytics' },
   { href: '/dashboard/workflows', label: 'Workflows' },
-  { href: '/dashboard/config/late-fee', label: 'Late Fee' },
+  { href: '/dashboard/settings', label: 'Settings' },
 ];
 
 export function Sidebar() {

@@ -31,12 +31,16 @@ model Landlord {
   email         String               @unique
   passwordHash  String
   name          String
+  emailVerified Boolean              @default(false)
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
   tenants       Tenant[]
   payments      Payment[]
   workflows     EscalationWorkflow[]
   lateFeeConfig LateFeeConfig?
+  verificationTokens EmailVerificationToken[]
+  passwordResetTokens PasswordResetToken[]
+  refreshTokens RefreshToken[]
 }
 
 model Tenant {
@@ -113,4 +117,42 @@ model LateFeeConfig {
   gracePeriodDays Int      @default(0)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+model EmailVerificationToken {
+  id         String   @id @default(cuid())
+  landlordId String
+  landlord   Landlord @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+  tokenHash  String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  @@index([landlordId])
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id         String   @id @default(cuid())
+  landlordId String
+  landlord   Landlord @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+  tokenHash  String
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime @default(now())
+
+  @@index([landlordId])
+  @@index([expiresAt])
+}
+
+model RefreshToken {
+  id         String   @id @default(cuid())
+  landlordId String
+  landlord   Landlord @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+  tokenHash  String
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime @default(now())
+
+  @@index([landlordId])
+  @@index([expiresAt])
 }

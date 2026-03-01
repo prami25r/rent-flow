@@ -15,3 +15,9 @@ export const getActiveWorkflow = async (req: Request, res: Response) => {
   res.json(wf);
 };
 
+export const getWorkflowById = async (req: Request, res: Response) => {
+  const landlordId = req.user!.landlordId;
+  const { id } = req.params;
+  const wf = await workflowService.getById(landlordId, id);
+  res.json(wf);
+};

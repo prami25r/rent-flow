@@ -73,4 +73,14 @@ export type AnalyticsSummary = {
   recoveryRate: number;
   totalLateFees: number;
   risk: Record<RiskLevel, number>;
+  totalTenants: number;
+  overdueCount: number;
+  overdueSamples: Array<{
+    id: string;
+    tenantId: string;
+    dueDate: string;
+    amountDue: number;
+    status: PaymentStatus;
+    tenant: { id: string; firstName: string; lastName: string; unit: string };
+  }>;
 };

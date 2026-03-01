@@ -8,7 +8,9 @@ type AuthState = {
   user: Landlord | null;
   token: string | null;
   role: Role;
+  hasOnboarded: boolean;
   setAuth: (user: Landlord, token: string, role?: Role) => void;
+  setOnboarded: () => void;
   clear: () => void;
 };
 
@@ -18,6 +20,7 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       role: 'owner',
+      hasOnboarded: false,
       setAuth: (user, token, role) => {
         set({ user, token, role: role ?? 'owner' });
         if (typeof document !== 'undefined') {
@@ -25,8 +28,9 @@ export const useAuthStore = create<AuthState>()(
           document.cookie = `rf_token=${encodeURIComponent(token)}; path=/; expires=${expires.toUTCString()}`;
         }
       },
+      setOnboarded: () => set({ hasOnboarded: true }),
       clear: () => {
-        set({ user: null, token: null, role: 'owner' });
+        set({ user: null, token: null, role: 'owner', hasOnboarded: false });
         if (typeof document !== 'undefined') {
           document.cookie = 'rf_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
         }

@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/axios';
 import type { AnalyticsSummary, RiskLevel } from '@/types/api';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui/card';
 
 const Bar = dynamic(async () => (await import('react-chartjs-2')).Bar, { ssr: false });
 

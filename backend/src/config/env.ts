@@ -20,6 +20,24 @@ const EnvSchema = z.object({
     .string()
     .default('100')
     .transform((v) => Number(v)),
+  ACCESS_TOKEN_TTL_MINUTES: z
+    .string()
+    .default('15')
+    .transform((v) => Number(v)),
+  REFRESH_TOKEN_TTL_DAYS: z
+    .string()
+    .default('7')
+    .transform((v) => Number(v)),
+  EMAIL_TOKEN_TTL_HOURS: z
+    .string()
+    .default('24')
+    .transform((v) => Number(v)),
+  RESET_TOKEN_TTL_HOURS: z
+    .string()
+    .default('1')
+    .transform((v) => Number(v)),
+  LOGIN_LOCKOUT_THRESHOLD: z.string().default('5').transform((v) => Number(v)),
+  LOGIN_LOCKOUT_TTL_MINUTES: z.string().default('15').transform((v) => Number(v)),
 });
 
 const parsed = EnvSchema.safeParse(process.env);

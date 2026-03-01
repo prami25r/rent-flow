@@ -5,9 +5,12 @@ import { startDailyWorker } from './jobs/queue';
 
 const port = Number(env.PORT);
 
-startDailyWorker();
+try {
+  startDailyWorker();
+} catch (err) {
+  logger.warn({ err }, 'Failed to start daily worker, continuing without Redis');
+}
 
 app.listen(port, () => {
   logger.info({ port }, 'RentFollow API listening');
 });
-
