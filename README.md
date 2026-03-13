@@ -20,6 +20,9 @@ rent-flow/
 ```bash
 cd backend
 npm install
+cp .env.example .env
+docker compose up -d db redis
+npm run prisma:generate
 npm run dev
 ```
 
