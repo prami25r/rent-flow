@@ -26,11 +26,15 @@ npm run prisma:generate
 npm run dev
 ```
 
+> Backend runs on `http://localhost:4000` by default for frontend proxy compatibility.
+
 ### Frontend
 
 ```bash
 cd frontend
 npm install
+# optional if backend is not on :4000
+# echo "BACKEND_URL=http://localhost:4000" > .env.local
 npm run dev
 ```
 

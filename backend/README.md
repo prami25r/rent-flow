@@ -26,6 +26,7 @@ npm install
 
 ```bash
 cp .env.example .env
+# defaults to PORT=4000 to match frontend proxy
 ```
 
 3) Start Postgres + Redis
