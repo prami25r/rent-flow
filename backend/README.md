@@ -35,17 +35,13 @@ cp .env.example .env
 docker compose up -d db redis
 ```
 
-4) Generate Prisma client
-
-```bash
-npm run prisma:generate
-```
-
-5) Run the API
+4) Run the API
 
 ```bash
 npm run dev
 ```
+
+> `npm run dev` now runs `prisma generate` automatically before starting.
 
 ## Why `Invalid environment configuration` happens
 
