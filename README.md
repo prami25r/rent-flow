@@ -22,11 +22,11 @@ cd backend
 npm install
 cp .env.example .env
 docker compose up -d db redis
-npm run prisma:generate
 npm run dev
 ```
 
 > Backend runs on `http://localhost:4000` by default for frontend proxy compatibility.
+> `npm run dev` auto-generates Prisma client in backend.
 
 ### Frontend
 
