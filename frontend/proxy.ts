@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 const PUBLIC_PATHS = ['/login', '/register', '/api', '/_next', '/favicon.ico'];
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const isPublic = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
   if (isPublic) return NextResponse.next();
@@ -15,6 +15,7 @@ export function middleware(req: NextRequest) {
     url.searchParams.set('next', pathname);
     return NextResponse.redirect(url);
   }
+
   return NextResponse.next();
 }
 

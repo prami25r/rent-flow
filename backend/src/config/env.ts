@@ -2,13 +2,14 @@ import 'dotenv/config';
 import { z } from 'zod';
 
 const EnvSchema = z.object({
-  PORT: z.string().default('3000'),
+  PORT: z.string().default('4000'),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   JWT_SECRET: z.string().min(16),
   DATABASE_URL: z.string().url(),
   REDIS_HOST: z.string().default('localhost'),
   REDIS_PORT: z
     .string()
+    .default('6379')
     .transform((v) => Number(v))
     .refine((n) => !Number.isNaN(n) && n > 0),
   REDIS_PASSWORD: z.string().optional().nullable(),
@@ -42,7 +43,10 @@ const EnvSchema = z.object({
 
 const parsed = EnvSchema.safeParse(process.env);
 if (!parsed.success) {
-  console.error('Invalid environment configuration', parsed.error.flatten().fieldErrors);
+  const fieldErrors = parsed.error.flatten().fieldErrors;
+  console.error('Invalid environment configuration.');
+  console.error(fieldErrors);
+  console.error('Create backend/.env from backend/.env.example and set required values (JWT_SECRET, DATABASE_URL).');
   process.exit(1);
 }
 

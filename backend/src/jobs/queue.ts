@@ -26,8 +26,13 @@ export function startDailyWorker() {
     worker.on('failed', (job, err) => {
       logger.error({ jobId: job?.id, err }, 'Daily overdue scan failed');
     });
-    worker.on('error', (err) => {
-      logger.error({ err }, 'Daily worker error');
+    worker.once('error', async (err) => {
+      logger.warn({ err }, 'Redis unavailable, disabling daily worker');
+      try {
+        await worker.close();
+      } catch (closeErr) {
+        logger.error({ err: closeErr }, 'Failed to close daily worker after Redis error');
+      }
     });
   } catch (err) {
     logger.warn({ err }, 'Redis not available, skipping daily worker');
